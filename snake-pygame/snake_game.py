@@ -2,6 +2,7 @@ import pygame
 import random
 from enum import Enum
 from collections import namedtuple
+import numpy as np
 
 pygame.init()  # 初始化pygame
 font = pygame.font.Font('arial.ttf', 25)  # 設定遊戲字體：arial.ttf
@@ -29,7 +30,7 @@ BLOCK_SIZE = 20
 SPEED = 20
 
 
-class SnakeGame:
+class SnakeGameAI:
 
     def __init__(self, w=640, h=480):
         self.w = w  # 設定遊戲的寬度
@@ -38,10 +39,10 @@ class SnakeGame:
         self.display = pygame.display.set_mode((self.w, self.h))  # 設定pygame的視窗長寬
         pygame.display.set_caption('Snake')  # 標題名為Snake
         self.clock = pygame.time.Clock()  # 設定遊戲時間
+        self.reset()    # 重置遊戲
 
-        # 初始化
+    def reset(self):
         self.direction = Direction.RIGHT  # 初始遊戲狀態，蛇的方向為右邊
-
         self.head = Point(self.w / 2, self.h / 2)  # 蛇的頭部位置 畫面中心
         # 設定整條蛇的list，以及牠的兩節身體
         self.snake = [self.head,
@@ -51,6 +52,7 @@ class SnakeGame:
         self.score = 0  # 初始分數0
         self.food = None  # 初始食物數量0
         self._place_food()  # 呼叫放置食物的函數
+        self.frame_iteration = 0   # 重置遊戲的迭代
 
     # 放置食物的函數
     def _place_food(self):
@@ -64,12 +66,16 @@ class SnakeGame:
 
     # 玩家操作
     def play_step(self):
+        self.frame_iteration += 1   # 增加遊戲迭代
+
         # 收集玩家輸入
         for event in pygame.event.get():
             # 退出事件
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
+            '''
+            #玩家操作需要
             # 方向鍵事件
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
@@ -80,38 +86,46 @@ class SnakeGame:
                     self.direction = Direction.UP
                 elif event.key == pygame.K_DOWN:
                     self.direction = Direction.DOWN
+            '''
 
         # 移動
-        self._move(self.direction)  # 更新頭部的方向
-        self.snake.insert(0, self.head) # 插入頭部
+        self._move(action)  # AI給出動作
+        self.snake.insert(0, self.head)    # 插入頭部
 
         # 檢查遊戲狀態
-        game_over = False
-        # 檢測碰撞
-        if self._is_collision():
-            game_over = True
-            return game_over, self.score
+        reward = 0  # 獎勵設為0
+        game_over = False   # 輸掉遊戲(bool)設為否
+
+        # 檢測碰撞與是否超時(時間根據當前的蛇身長度)
+        if self._is_collision() or self.frame_iteration > 100*len(self.snake):
+            game_over = True    # 輸掉遊戲(bool)設為是
+            reward = -10   # 遊戲獎勵設為-10
+            return reward, game_over, self.score
 
         # 放置食物或移動
         if self.head == self.food:
-            self.score += 1
-            self._place_food()
+            self.score += 1    # 分數+1
+            reward = 10    # 遊戲獎勵設為10
+            self._place_food()  # 放置新食物
         else:
-            self.snake.pop()
+            self.snake.pop()   # 刪除蛇的尾巴
 
         # 更新UI以及遊戲時間
         self._update_ui()
         self.clock.tick(SPEED)
         # 回傳當前狀態
-        return game_over, self.score
+        return reward, game_over, self.score
 
     # 碰撞函數
-    def _is_collision(self):
+    def _is_collision(self, pt=None):
+        # 將 pt 設為蛇頭
+        if pt is None:
+            pt = self.head
         # 撞到邊
-        if self.head.x > self.w - BLOCK_SIZE or self.head.x < 0 or self.head.y > self.h - BLOCK_SIZE or self.head.y < 0:
+        if pt.x > self.w - BLOCK_SIZE or pt.x < 0 or pt.y > self.h - BLOCK_SIZE or pt.y < 0:
             return True
         # 撞到自己
-        if self.head in self.snake[1:]:
+        if pt in self.snake[1:]:
             return True
 
         # 其他情況，無碰撞
@@ -135,25 +149,46 @@ class SnakeGame:
         pygame.display.flip()   # 更新整個畫面
 
     # 移動函數
-    def _move(self, direction):
+    def _move(self, action):
+        # 蛇頭有三種選擇:[前進, 右轉, 左轉]
+
+        # 順時針方向list
+        clock_wise = [Direction.RIGHT, Direction.DOWN, Direction.LEFT, Direction.UP]
+        idx = clock_wise.index(self.direction)  # index設為現在蛇頭的方向
+
+        # [1, 0, 0]代表前進
+        # 比較action和[1, 0, 0]的list
+        if np.array_equal(action, [1, 0, 0]):
+            new_dir = clock_wise[idx]   # 方向保持不變
+        elif np.array_equal(action, [0, 1, 0]):
+            new_idx = (idx + 1) % 4    # 向右轉=順時針旋轉=順時針方向list+1
+            new_dir = clock_wise[new_idx]   # 方向保持不變
+        else:
+            new_idx = (idx - 1) % 4  # 向左轉=逆時針旋轉=順時針方向list-1
+            new_dir = clock_wise[new_idx]  # 方向保持不變
+
+        self.direction = new_dir    # 更新方向
+
         # x,y設為頭部位置
         x = self.head.x
         y = self.head.y
 
-        # 根據direction移動
-        if direction == Direction.RIGHT:
+        # 根據self.direction移動
+        if self.direction == Direction.RIGHT:
             x += BLOCK_SIZE
-        elif direction == Direction.LEFT:
+        elif self.direction == Direction.LEFT:
             x -= BLOCK_SIZE
-        elif direction == Direction.DOWN:
+        elif self.direction == Direction.DOWN:
             y += BLOCK_SIZE
-        elif direction == Direction.UP:
+        elif self.direction == Direction.UP:
             y -= BLOCK_SIZE
 
         # 設定頭的位置
         self.head = Point(x, y)
 
 
+'''
+# 使用者介面
 if __name__ == '__main__':
     game = SnakeGame()
 
@@ -168,3 +203,4 @@ if __name__ == '__main__':
     print('Final Score', score)
 
     pygame.quit()
+'''

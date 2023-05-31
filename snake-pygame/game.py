@@ -97,7 +97,7 @@ class SnakeGameAI:
         game_over = False   # 輸掉遊戲(bool)設為否
 
         # 檢測碰撞與是否超時(時間根據當前的蛇身長度)
-        if self._is_collision() or self.frame_iteration > 100*len(self.snake):
+        if self.is_collision() or self.frame_iteration > 100*len(self.snake):
             game_over = True    # 輸掉遊戲(bool)設為是
             reward = -10   # 遊戲獎勵設為-10
             return reward, game_over, self.score
@@ -117,7 +117,7 @@ class SnakeGameAI:
         return reward, game_over, self.score
 
     # 碰撞函數
-    def _is_collision(self, pt=None):
+    def is_collision(self, pt=None):
         # 將 pt 設為蛇頭
         if pt is None:
             pt = self.head

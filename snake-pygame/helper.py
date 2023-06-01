@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from Ipython import display
+from IPython import display
 
 plt.ion()  # 開啟plot的互動模式
 

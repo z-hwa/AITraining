@@ -4,6 +4,7 @@ import numpy as np
 from collections import deque  # 用於儲存訓練資料
 from game import SnakeGameAI, Direction, Point  # 載入遊戲本體
 from model import Linear_QNet, QTrainer
+from helper import plot
 
 MAX_MEMORY = 100_000  # 最大記憶儲存量10萬
 BATCH_SIZE = 1000
@@ -15,7 +16,7 @@ class Agent:
     def __init__(self):
         self.n_games = 0  # 紀錄遊戲局數
         self.epsilon = 0  # 隨機損失區間(率)
-        self.gamma = 0.9    # 小於1
+        self.gamma = 0.9  # 小於1
         ''' 
             gamma
             折扣率: 用於讓agent衡量，是要更關注長期還是短期的獎勵
@@ -24,8 +25,8 @@ class Agent:
         '''
 
         self.memory = deque(maxlen=MAX_MEMORY)  # deque資料結構，從左邊丟出(先入先出)，用於agent的記憶
-        self.model = Linear_QNet(11, 256, 3)    # 創建原始模型(輸入、隱藏、輸出)
-        self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)    # 創建訓練者
+        self.model = Linear_QNet(11, 256, 3)  # 創建原始模型(輸入、隱藏、輸出)
+        self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)  # 創建訓練者
 
     # 獲取遊戲狀態
     def get_state(self, game):
@@ -113,9 +114,9 @@ class Agent:
             state0 = torch.tensor(state, dtype=torch.float)  # 轉換狀態為張量
             prediction = self.model(state0)  # 透過模型預測下一步(執行model中的forward函數)
             move = torch.argmax(prediction).item()  # 選取預測中最大的數值，作為下一步行動 Ex. [5.0, 2.4, 1.0]
-            final_move[move] = 1    # 選取最終行動方案
+            final_move[move] = 1  # 選取最終行動方案
 
-        return final_move   # 回傳行動
+        return final_move  # 回傳行動
 
 
 # 訓練函數
@@ -158,7 +159,11 @@ def train():
 
             print('Game', agent.n_games, 'Score', score, 'Record:', record)
 
-            # TODO: plot
+            plot_score.append(score)  # 添加分數到展示list
+            total_score += score  # 計算到目前的總分
+            mean_score = total_score / agent.n_games  # 計算平均
+            plot_mean_score.append(mean_score)  # 添加平均分數到展示list
+            plot(plot_score, plot_mean_score)  # 展示
 
 
 # 主程式

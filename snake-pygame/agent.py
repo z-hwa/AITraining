@@ -1,10 +1,12 @@
 import torch
 import random  # 隨機函數
 import numpy as np
+import os
 from collections import deque  # 用於儲存訓練資料
 from game import SnakeGameAI, Direction, Point  # 載入遊戲本體
 from model import Linear_QNet, QTrainer
 from helper import plot
+from helperSave import slot, slotSave
 
 MAX_MEMORY = 100_000  # 最大記憶儲存量10萬
 BATCH_SIZE = 1000
@@ -120,7 +122,7 @@ class Agent:
 
 
 # 訓練函數
-def train():
+def train(file_name):
     plot_score = []  # 分數
     plot_mean_score = []  # 平均分數
     total_score = 0  # 總分
@@ -136,7 +138,12 @@ def train():
         final_move = agent.get_action(state_old)
 
         # 執行動作以及獲得新的狀態
-        reward, done, score = game.play_step(final_move)
+        reward, done, score, endall = game.play_step(final_move)
+        # 透過點x完全關閉訓練，儲存訓練圖
+        if endall == 1:
+            slotSave(file_name)
+            return
+
         state_new = agent.get_state(game)
 
         # 以short memory訓練
@@ -155,7 +162,8 @@ def train():
             # 更新最高分數
             if score > record:
                 record = score
-                agent.model.save()  # 呼叫儲存模型的函數
+                agent.model.save(file_name)  # 呼叫儲存模型的函數
+                slotSave(file_name)  # 儲存當前訓練圖
 
             print('Game', agent.n_games, 'Score', score, 'Record:', record)
 
@@ -164,8 +172,4 @@ def train():
             mean_score = total_score / agent.n_games  # 計算平均
             plot_mean_score.append(mean_score)  # 添加平均分數到展示list
             plot(plot_score, plot_mean_score)  # 展示
-
-
-# 主程式
-if __name__ == '__main__':
-    train()
+            slot(plot_score, plot_mean_score)  # 儲存資料

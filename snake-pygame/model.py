@@ -24,6 +24,7 @@ class Linear_QNet(nn.Module):
             os.makedirs(model_folder_path)  # 創建該路徑
 
         file_name = os.path.join(model_folder_path, file_name)  # 設置檔案名
+        file_name += '.pth'
         torch.save(self.state_dict(), file_name)  # 儲存模型
 
 

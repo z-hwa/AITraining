@@ -4,9 +4,6 @@ from enum import Enum
 from collections import namedtuple
 import numpy as np
 
-pygame.init()  # 初始化pygame
-font = pygame.font.Font('arial.ttf', 25)  # 設定遊戲字體：arial.ttf
-
 
 # 設定方向的Enum
 class Direction(Enum):
@@ -33,6 +30,8 @@ SPEED = 40  # ai:40 player:20
 class SnakeGameAI:
 
     def __init__(self, w=640, h=480):
+        pygame.init()
+        self.font = pygame.font.Font('arial.ttf', 25)
         self.w = w  # 設定遊戲的寬度
         self.h = h
 
@@ -73,7 +72,8 @@ class SnakeGameAI:
             # 退出事件
             if event.type == pygame.QUIT:
                 pygame.quit()
-                quit()
+                return 0, 0, 0, 1
+                # quit()
             '''
             #玩家操作需要
             # 方向鍵事件
@@ -100,7 +100,7 @@ class SnakeGameAI:
         if self.is_collision() or self.frame_iteration > 100*len(self.snake):
             game_over = True    # 輸掉遊戲(bool)設為是
             reward = -10   # 遊戲獎勵設為-10
-            return reward, game_over, self.score
+            return reward, game_over, self.score, 0
 
         # 放置食物或移動
         if self.head == self.food:
@@ -114,7 +114,7 @@ class SnakeGameAI:
         self._update_ui()
         self.clock.tick(SPEED)
         # 回傳當前狀態
-        return reward, game_over, self.score
+        return reward, game_over, self.score, 0
 
     # 碰撞函數
     def is_collision(self, pt=None):
@@ -144,7 +144,7 @@ class SnakeGameAI:
         pygame.draw.rect(self.display, RED, pygame.Rect(self.food.x, self.food.y, BLOCK_SIZE, BLOCK_SIZE))
 
         # 分數資訊
-        text = font.render("Score: " + str(self.score), True, WHITE)
+        text = self.font.render("Score: " + str(self.score), True, WHITE)
         self.display.blit(text, [0, 0])
         pygame.display.flip()   # 更新整個畫面
 

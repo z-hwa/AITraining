@@ -39,10 +39,10 @@ class Agent:
         point_d = Point(head.x, head.y + 20)
 
         # 設定蛇頭的方向在哪邊
-        dir_l = game.direction == Direction.Left
-        dir_r = game.direction == Direction.Right
-        dir_u = game.direction == Direction.Up
-        dir_d = game.direction == Direction.Down
+        dir_l = game.direction == Direction.LEFT
+        dir_r = game.direction == Direction.RIGHT
+        dir_u = game.direction == Direction.UP
+        dir_d = game.direction == Direction.DOWN
 
         # 狀態
         state = [

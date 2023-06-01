@@ -27,7 +27,7 @@ BLACK = (0, 0, 0)
 
 # 設定，單位方塊的大小以及遊戲速度
 BLOCK_SIZE = 20
-SPEED = 20
+SPEED = 40  # ai:40 player:20
 
 
 class SnakeGameAI:
@@ -65,7 +65,7 @@ class SnakeGameAI:
             self._place_food()
 
     # 玩家操作
-    def play_step(self):
+    def play_step(self, action):
         self.frame_iteration += 1   # 增加遊戲迭代
 
         # 收集玩家輸入

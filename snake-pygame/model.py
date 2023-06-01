@@ -21,7 +21,7 @@ class Linear_QNet(nn.Module):
         model_folder_path = './model'  # 模型儲存路徑
         # 如果該路徑不存在
         if not os.path.exists(model_folder_path):
-            os.makedir(model_folder_path)  # 創建該路徑
+            os.makedirs(model_folder_path)  # 創建該路徑
 
         file_name = os.path.join(model_folder_path, file_name)  # 設置檔案名
         torch.save(self.state_dict(), file_name)  # 儲存模型
@@ -63,7 +63,7 @@ class QTrainer:
             Q_new = reward[idx]  # 預設新的Q值為當前編號的reward
 
             # 如果done為false(遊戲還沒結束，可以預測下一個行動)
-            if not doen[idx]:
+            if not done[idx]:
                 Q_new = reward[idx] + self.gamma * torch.max(self.model(next_state[idx]))  # 藉由公式計算新的Q值
 
             target[idx][torch.argmax(action).item()] = Q_new  # 將運測中行動可能性最高的設為新的Q值

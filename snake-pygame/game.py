@@ -24,7 +24,7 @@ BLACK = (0, 0, 0)
 
 # 設定，單位方塊的大小以及遊戲速度
 BLOCK_SIZE = 20
-SPEED = 40  # ai:40 player:20
+SPEED = 80  # ai:40 player:20
 
 
 class SnakeGameAI:
@@ -38,14 +38,11 @@ class SnakeGameAI:
         self.display = pygame.display.set_mode((self.w, self.h))  # 設定pygame的視窗長寬
         pygame.display.set_caption('Snake')  # 標題名為Snake
         self.clock = pygame.time.Clock()  # 設定遊戲時間
-        self.reset()    # 重置遊戲
+        self.reset()  # 重置遊戲
 
     def reset(self):
-        ranX = random.randint(0, self.w)
-        ranY = random.randint(0, self.h)
-
         self.direction = Direction.RIGHT  # 初始遊戲狀態，蛇的方向為右邊
-        self.head = Point(40, 80)  # 蛇的頭部位置 畫面中心
+        self.head = Point(self.w / 2, self.h / 2)  # 蛇的頭部位置 畫面中心
         # 設定整條蛇的list，以及牠的兩節身體
         self.snake = [self.head,
                       Point(self.head.x - BLOCK_SIZE, self.head.y),
@@ -54,7 +51,7 @@ class SnakeGameAI:
         self.score = 0  # 初始分數0
         self.food = None  # 初始食物數量0
         self._place_food()  # 呼叫放置食物的函數
-        self.frame_iteration = 0   # 重置遊戲的迭代
+        self.frame_iteration = 0  # 重置遊戲的迭代
 
     # 放置食物的函數
     def _place_food(self):
@@ -68,7 +65,11 @@ class SnakeGameAI:
 
     # 玩家操作
     def play_step(self, action):
-        self.frame_iteration += 1   # 增加遊戲迭代
+        '''
+        print(self.snake_body_dir)
+        input()
+        '''
+        self.frame_iteration += 1  # 增加遊戲迭代
 
         # 收集玩家輸入
         for event in pygame.event.get():
@@ -93,25 +94,32 @@ class SnakeGameAI:
 
         # 移動
         self._move(action)  # AI給出動作
-        self.snake.insert(0, self.head)    # 插入頭部
+        self.snake.insert(0, self.head)  # 插入頭部
+        # self.snake_body_dir.insert(0, 0)  # 插入頭部的前一個的方向=0(沒有更前面了)
+        # self.snake_body_dir[1] = self.snake_body_dir_n  # 更新舊頭部
 
         # 檢查遊戲狀態
         reward = 0  # 獎勵設為0
-        game_over = False   # 輸掉遊戲(bool)設為否
+        game_over = False  # 輸掉遊戲(bool)設為否
 
         # 檢測碰撞與是否超時(時間根據當前的蛇身長度)
-        if self.is_collision() or self.frame_iteration > 100*len(self.snake):
-            game_over = True    # 輸掉遊戲(bool)設為是
-            reward = -10   # 遊戲獎勵設為-10
+        if self.is_collision():
+            game_over = True  # 輸掉遊戲(bool)設為是
+            reward = -10  # 遊戲獎勵設為-10
+            return reward, game_over, self.score, 0
+        elif self.frame_iteration > 100 * len(self.snake):
+            game_over = True
+            reward = -10
             return reward, game_over, self.score, 0
 
         # 放置食物或移動
         if self.head == self.food:
-            self.score += 1    # 分數+1
-            reward = 10    # 遊戲獎勵設為10
+            self.score += 1  # 分數+1
+            reward = 10  # 遊戲獎勵設為10
             self._place_food()  # 放置新食物
         else:
-            self.snake.pop()   # 刪除蛇的尾巴
+            self.snake.pop()  # 刪除蛇的尾巴
+            # self.snake_body_dir.pop()  # 刪除身體方位偵測器
 
         # 更新UI以及遊戲時間
         self._update_ui()
@@ -136,7 +144,7 @@ class SnakeGameAI:
 
     # 更新遊戲UI
     def _update_ui(self):
-        self.display.fill(BLACK)    # 填充背景顏色
+        self.display.fill(BLACK)  # 填充背景顏色
 
         # 畫蛇的方格
         for pt in self.snake:
@@ -149,7 +157,7 @@ class SnakeGameAI:
         # 分數資訊
         text = self.font.render("Score: " + str(self.score), True, WHITE)
         self.display.blit(text, [0, 0])
-        pygame.display.flip()   # 更新整個畫面
+        pygame.display.flip()  # 更新整個畫面
 
     # 移動函數
     def _move(self, action):
@@ -162,15 +170,15 @@ class SnakeGameAI:
         # [1, 0, 0]代表前進
         # 比較action和[1, 0, 0]的list
         if np.array_equal(action, [1, 0, 0]):
-            new_dir = clock_wise[idx]   # 方向保持不變
+            new_dir = clock_wise[idx]  # 方向保持不變
         elif np.array_equal(action, [0, 1, 0]):
-            new_idx = (idx + 1) % 4    # 向右轉=順時針旋轉=順時針方向list+1
-            new_dir = clock_wise[new_idx]   # 方向保持不變
+            new_idx = (idx + 1) % 4  # 向右轉=順時針旋轉=順時針方向list+1
+            new_dir = clock_wise[new_idx]  # 方向保持不變
         else:
             new_idx = (idx - 1) % 4  # 向左轉=逆時針旋轉=順時針方向list-1
             new_dir = clock_wise[new_idx]  # 方向保持不變
 
-        self.direction = new_dir    # 更新方向
+        self.direction = new_dir  # 更新方向
 
         # x,y設為頭部位置
         x = self.head.x

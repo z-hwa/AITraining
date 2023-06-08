@@ -7,10 +7,17 @@ from game import SnakeGameAI, Direction, Point  # 載入遊戲本體
 from model import Linear_QNet, QTrainer
 from helper import plot
 from helperSave import slot, slotSave
+import copy
 
 MAX_MEMORY = 100_000  # 最大記憶儲存量10萬
 BATCH_SIZE = 1000
 LR = 0.001  # 學習率
+
+UPPER_EPSILON = 200  # epsilon的上限
+AI_MANIPULATE_RATE = 2.5  # 數值越高 AI操控機率越高
+BODY_NUM = 20  # 身體數量(x+y)
+FOOD_NUM = 2
+INPUT_LAYER = BODY_NUM + 11  # 輸入層總數
 
 
 class Agent:
@@ -27,7 +34,7 @@ class Agent:
         '''
 
         self.memory = deque(maxlen=MAX_MEMORY)  # deque資料結構，從左邊丟出(先入先出)，用於agent的記憶
-        self.model = Linear_QNet(11, 256, 3)  # 創建原始模型(輸入、隱藏、輸出)
+        self.model = Linear_QNet(INPUT_LAYER + FOOD_NUM, 256, 3)  # 創建原始模型(輸入、隱藏、輸出)
         self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)  # 創建訓練者
 
     # 獲取遊戲狀態
@@ -45,6 +52,17 @@ class Agent:
         dir_r = game.direction == Direction.RIGHT
         dir_u = game.direction == Direction.UP
         dir_d = game.direction == Direction.DOWN
+
+        food_pos = [game.food.x / 640, game.food.y / 480]
+        pos = []
+
+        for idx in range(0, int(BODY_NUM / 2)):
+            if idx < len(game.snake):
+                pos.append(game.snake[idx].x / 640.0)
+                pos.append(game.snake[idx].y / 480.0)
+            else:
+                pos.append(-0.00001)
+                pos.append(-0.00001)
 
         # 狀態
         state = [
@@ -79,7 +97,10 @@ class Agent:
             game.food.y > game.head.y  # 食物在下邊
         ]
 
-        return np.array(state, dtype=int)  # 回傳整數狀態數組
+        state.extend(pos)
+        state.extend(food_pos)
+
+        return np.array(state, dtype=float)  # 回傳整數狀態數組
 
     # 記憶(狀態、動作、獎勵、下一步狀態、遊戲結束與否)
     def remember(self, state, action, reward, next_state, done):
@@ -99,9 +120,9 @@ class Agent:
         self.trainer.train_step(state, action, reward, next_state, done)  # 單組數據的訓練
 
     # 獲得動作
-    def get_action(self, state):
+    def get_action(self, state, game):
         # 隨機移動: tradeoff exploration /  exploitation
-        self.epsilon = 80 - self.n_games
+        self.epsilon = UPPER_EPSILON - self.n_games / (len(game.snake) - 2)
         final_move = [0, 0, 0]  # 最終移動方向
 
         '''
@@ -109,7 +130,7 @@ class Agent:
         當遊戲局數變大 -> epsilon變低 -> 0~200隨機出現小於epsilon的可能性越低 -> 進入隨機選取步驟的可能越低
         直到局數大於等於80，不再隨機選取步數
         '''
-        if random.randint(0, 200) < self.epsilon:
+        if random.randint(0, int(UPPER_EPSILON * AI_MANIPULATE_RATE)) < self.epsilon:
             move = random.randint(0, 2)
             final_move[move] = 1
         else:
@@ -135,7 +156,7 @@ def train(file_name):
         state_old = agent.get_state(game)
 
         # 獲得移動
-        final_move = agent.get_action(state_old)
+        final_move = agent.get_action(state_old, game)
 
         # 執行動作以及獲得新的狀態
         reward, done, score, endall = game.play_step(final_move)

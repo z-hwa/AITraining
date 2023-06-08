@@ -41,8 +41,11 @@ class SnakeGameAI:
         self.reset()    # 重置遊戲
 
     def reset(self):
+        ranX = random.randint(0, self.w)
+        ranY = random.randint(0, self.h)
+
         self.direction = Direction.RIGHT  # 初始遊戲狀態，蛇的方向為右邊
-        self.head = Point(self.w / 2, self.h / 2)  # 蛇的頭部位置 畫面中心
+        self.head = Point(40, 80)  # 蛇的頭部位置 畫面中心
         # 設定整條蛇的list，以及牠的兩節身體
         self.snake = [self.head,
                       Point(self.head.x - BLOCK_SIZE, self.head.y),

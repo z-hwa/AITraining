@@ -13,6 +13,7 @@ if __name__ == '__main__':
 
         # 模式1: 玩家手動
         if mode == 1:
+            print('In game surface, press any button to start game!')
             while True:
                 runner()  # 執行者，並創建遊戲
                 choose = input('Is you want to play again?(y/n)')  # 確認是否要繼續玩
@@ -32,6 +33,8 @@ if __name__ == '__main__':
                     break
         elif mode == 3:
             # 模式3: ai訓練
+            print('If you want to end training, please click X in game surface.')
+            print('Training model and figure will be saved in model and figure folder, respectively.')
             while True:
                 file_name = input('please input model name which will be save in ./model after training:')
                 train(file_name)

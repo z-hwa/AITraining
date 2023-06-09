@@ -15,7 +15,7 @@ LR = 0.001  # 學習率
 
 UPPER_EPSILON = 80  # epsilon的上限
 AI_MANIPULATE_RATE = 2.5  # 數值越高 AI操控機率越高
-BODY_NUM = 60  # 身體數量(x+y)
+BODY_NUM = 0 * 2  # 身體數量(x+y)
 FOOD_NUM = 0
 INPUT_LAYER = 11 + BODY_NUM + FOOD_NUM  # 輸入層總數
 
@@ -130,7 +130,7 @@ class Agent:
     # 獲得動作
     def get_action(self, state, game):
         # 隨機移動: tradeoff exploration /  exploitation
-        self.epsilon = UPPER_EPSILON - self.n_games # / (len(game.snake) - 2)
+        self.epsilon = UPPER_EPSILON - self.n_games  # / (len(game.snake) - 2)
         final_move = [0, 0, 0]  # 最終移動方向
 
         '''

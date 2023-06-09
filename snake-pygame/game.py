@@ -24,7 +24,7 @@ BLACK = (0, 0, 0)
 
 # 設定，單位方塊的大小以及遊戲速度
 BLOCK_SIZE = 20
-SPEED = 40  # ai:40 player:20
+SPEED = 80  # ai:80 player:20
 
 
 class SnakeGameAI:
@@ -111,8 +111,8 @@ class SnakeGameAI:
             game_over = True
             reward = -10
             return reward, game_over, self.score, 0
-        else:
-            reward = -0.01  # 催促AI做出行動
+        # else:
+        #    reward = -0.01
 
         # 放置食物或移動
         if self.head == self.food:

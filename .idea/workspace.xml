@@ -5,14 +5,28 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/snake-pygame/agent.py" beforeDir="false" afterPath="$PROJECT_DIR$/snake-pygame/agent.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/snake-pygame/figure/fa_food_pos.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/snake-pygame/data/a3_cg_fb3_fc1_fd1.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/snake-pygame/data/a4_without_u1update.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/snake-pygame/data/fb3_10bodys.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/snake-pygame/data/fc1_30bodys.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/snake-pygame/data/fc2_without_u1update.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/snake-pygame/data/fd1_50bodys.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/snake-pygame/figure/a3_cg_fb3_fc1_fd1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/snake-pygame/figure/a4_without_u1update.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/snake-pygame/figure/fb3_10bodys.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/snake-pygame/figure/fc1_30bodys.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/snake-pygame/figure/fc2_without_u1update.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/snake-pygame/figure/fd1_50bodys.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/snake-pygame/game.py" beforeDir="false" afterPath="$PROJECT_DIR$/snake-pygame/game.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/snake-pygame/helper.py" beforeDir="false" afterPath="$PROJECT_DIR$/snake-pygame/helper.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/snake-pygame/helperSave.py" beforeDir="false" afterPath="$PROJECT_DIR$/snake-pygame/helperSave.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/snake-pygame/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/snake-pygame/model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/snake-pygame/model/fa_food_pos.pth" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/snake-pygame/rec.md" beforeDir="false" afterPath="$PROJECT_DIR$/snake-pygame/rec.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/snake-pygame/userinterface.py" beforeDir="false" afterPath="$PROJECT_DIR$/snake-pygame/userinterface.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/snake-pygame/model/a3_cg_fb3_fc1_fd1.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/snake-pygame/model/a4_speed40.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/snake-pygame/model/a4_without_u1update.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/snake-pygame/model/fb3_10bodys.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/snake-pygame/model/fc1_30bodys.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/snake-pygame/model/fc2_without_u1update.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/snake-pygame/model/fd1_50bodys.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/snake-pygame/plan.md" beforeDir="false" afterPath="$PROJECT_DIR$/snake-pygame/plan.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/snake-pygame/record_model_train.md" beforeDir="false" afterPath="$PROJECT_DIR$/snake-pygame/record_model_train.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

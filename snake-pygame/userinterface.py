@@ -1,4 +1,4 @@
-from agent import train, train_preceed
+from agent import train, train_proceed
 from humangame import runner
 from agentPlaying import agent_play
 import pygame

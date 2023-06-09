@@ -111,4 +111,4 @@ def agent_play(model_path):
             total_score += score  # 計算到目前的總分
             mean_score = total_score / agent.n_games  # 計算平均
             plot_mean_score.append(mean_score)  # 添加平均分數到展示list
-            plot(plot_score, plot_mean_score)  # 展示
+            plot(plot_score, plot_mean_score, model_path)  # 展示

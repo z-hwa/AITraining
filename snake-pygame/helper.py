@@ -8,7 +8,7 @@ def plot(scores, mean_scores, file_name):
     display.clear_output(wait=True)  # 清空輸出
     display.display(plt.gcf())  # 獲取當前數字
     plt.clf()  # 清除當前數字
-    plt.title(file_name + '\n' + 'Training...')  # 標題
+    plt.title(file_name)  # 標題
     plt.xlabel('Number of Games')  # x軸
     plt.ylabel('Score')  # y軸
     plt.plot(scores)  # 根據分數繪製圖

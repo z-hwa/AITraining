@@ -15,9 +15,9 @@ LR = 0.001  # 學習率
 
 UPPER_EPSILON = 80  # epsilon的上限
 AI_MANIPULATE_RATE = 2.5  # 數值越高 AI操控機率越高
-BODY_NUM = 0  # 身體數量(x+y)
+BODY_NUM = 60  # 身體數量(x+y)
 FOOD_NUM = 0
-INPUT_LAYER = BODY_NUM + 11  # 輸入層總數
+INPUT_LAYER = 11 + BODY_NUM + FOOD_NUM  # 輸入層總數
 
 FIGURE_RECORD_FRE = 100  # 訓練紀錄圖片 存檔頻率
 
@@ -36,7 +36,7 @@ class Agent:
         '''
 
         self.memory = deque(maxlen=MAX_MEMORY)  # deque資料結構，從左邊丟出(先入先出)，用於agent的記憶
-        self.model = Linear_QNet(INPUT_LAYER + FOOD_NUM, 256, 3)  # 創建原始模型(輸入、隱藏、輸出)
+        self.model = Linear_QNet(INPUT_LAYER, 256, 3)  # 創建原始模型(輸入、隱藏、輸出)
         self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)  # 創建訓練者
 
     def proceed(self, model_path, numbers_game):
@@ -104,7 +104,8 @@ class Agent:
             game.food.y > game.head.y  # 食物在下邊
         ]
 
-        # state.extend(pos)
+        if BODY_NUM > 0:
+            state.extend(pos)
         # state.extend(food_pos)
 
         return np.array(state, dtype=float)  # 回傳整數狀態數組
@@ -129,7 +130,7 @@ class Agent:
     # 獲得動作
     def get_action(self, state, game):
         # 隨機移動: tradeoff exploration /  exploitation
-        self.epsilon = UPPER_EPSILON - self.n_games  # / (len(game.snake) - 2)
+        self.epsilon = UPPER_EPSILON - self.n_games # / (len(game.snake) - 2)
         final_move = [0, 0, 0]  # 最終移動方向
 
         '''
@@ -206,7 +207,7 @@ def train(file_name):
             mean_score = total_score / agent.n_games  # 計算平均
             plot_mean_score.append(mean_score)  # 添加平均分數到展示list
             plot(plot_score, plot_mean_score, file_name)  # 展示
-            slot(plot_score, plot_mean_score)  # 儲存資料
+            slot(plot_score, plot_mean_score, file_name)  # 儲存資料
 
             # 更新最高分數
             if score > record:
@@ -288,7 +289,7 @@ def train_proceed(file_path):
             mean_score = total_score / agent.n_games  # 計算平均
             plot_mean_score.append(mean_score)  # 添加平均分數到展示list
             plot(plot_score, plot_mean_score, file_name)  # 展示
-            slot(plot_score, plot_mean_score)  # 儲存資料
+            slot(plot_score, plot_mean_score, file_name)  # 儲存資料
 
             # 更新最高分數
             if score > record:

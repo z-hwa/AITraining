@@ -13,3 +13,6 @@ matplotlib ipython
 author：Patrick Loeber
 project name：Teach AI To Play Snake - Reinforcement Learning Tutorial With PyTorch And Pygame
 ref：https://youtu.be/5Vy5Dxu7vDs
+
+DEBUG:
+#1 https://stackoverflow.com/questions/20554074/sklearn-omp-error-15-initializing-libiomp5md-dll-but-found-mk2iomp5md-dll-a

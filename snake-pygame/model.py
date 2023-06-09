@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
+import numpy as np
 import os
 
 
@@ -11,6 +12,11 @@ class Linear_QNet(nn.Module):
 
         self.linear1 = nn.Linear(input_size, hidden_size)  # 第一個線性算子(輸入->隱藏)
         self.linear2 = nn.Linear(hidden_size, output_size)  # 第二個線性算子(隱藏->輸出)
+
+        # 用GPU訓練
+        if torch.cuda.is_available():
+            self.linear1 = self.linear1.cuda()
+            self.linear2 = self.linear2.cuda()
 
     def forward(self, x):
         x = F.relu(self.linear1(x))  # 先應用線性層1，接著透過F.relu致動
@@ -36,10 +42,22 @@ class QTrainer:
         self.optimizer = optim.Adam(model.parameters(), lr=self.lr)  # 最佳化方法(Adam)
         self.criterion = nn.MSELoss()  # 損失算法(MSE)
 
+        # 用GPU訓練
+        if torch.cuda.is_available():
+            self.model = self.model.cuda()
+            self.criterion = self.criterion.cuda()
+
     def train_step(self, state, action, reward, next_state, done):
-        # 透過torch.tensor重設每個型別
-        state = torch.tensor(state, dtype=torch.float)
-        next_state = torch.tensor(next_state, dtype=torch.float)
+        # 先轉成np.array 再透過torch.tensor重設每個型別
+        state_np = np.array(state)
+        next_state_np = np.array(next_state)
+        '''
+        reward_np = np.array(reward)
+        action_np = np.array(action)
+        '''
+
+        state = torch.tensor(state_np, dtype=torch.float)
+        next_state = torch.tensor(next_state_np, dtype=torch.float)
         reward = torch.tensor(reward, dtype=torch.float)
         action = torch.tensor(action, dtype=torch.long)
         # n維的x(資料)
@@ -52,6 +70,13 @@ class QTrainer:
             reward = torch.unsqueeze(reward, 0)
             action = torch.unsqueeze(action, 0)
             done = (done,)  # 把done轉為一個資料(tuple)
+
+        # 用GPU訓練
+        if torch.cuda.is_available():
+            state = state.cuda()
+            next_state = next_state.cuda()
+            reward = reward.cuda()
+            action = action.cuda()
 
         # 1. 透過現在的狀態去預測Q值
         pred = self.model(state)

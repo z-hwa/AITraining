@@ -3,12 +3,28 @@
   <component name="ChangeListManager">
     <list default="true" id="843435b7-480a-468e-a634-430754dfa680" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/snake-pygame/agent.py" beforeDir="false" afterPath="$PROJECT_DIR$/snake-pygame/agent.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/snake-pygame/figure/fa_food_pos.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/snake-pygame/game.py" beforeDir="false" afterPath="$PROJECT_DIR$/snake-pygame/game.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/snake-pygame/helper.py" beforeDir="false" afterPath="$PROJECT_DIR$/snake-pygame/helper.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/snake-pygame/helperSave.py" beforeDir="false" afterPath="$PROJECT_DIR$/snake-pygame/helperSave.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/snake-pygame/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/snake-pygame/model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/snake-pygame/model/fa_food_pos.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/snake-pygame/rec.md" beforeDir="false" afterPath="$PROJECT_DIR$/snake-pygame/rec.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/snake-pygame/userinterface.py" beforeDir="false" afterPath="$PROJECT_DIR$/snake-pygame/userinterface.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -28,9 +44,15 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/snake-pygame" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\PycharmProjects\AITraining\snake-pygame" />
+    </key>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -42,5 +64,20 @@
       <updated>1684601584516</updated>
     </task>
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
   </component>
 </project>

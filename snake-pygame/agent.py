@@ -9,15 +9,17 @@ from helper import plot
 from helperSave import slot, slotSave
 import copy
 
-MAX_MEMORY = 100_000  # 最大記憶儲存量10萬
+MAX_MEMORY = 100_000  # 最大記憶儲存量5萬
 BATCH_SIZE = 1000
 LR = 0.001  # 學習率
 
-UPPER_EPSILON = 200  # epsilon的上限
+UPPER_EPSILON = 80  # epsilon的上限
 AI_MANIPULATE_RATE = 2.5  # 數值越高 AI操控機率越高
-BODY_NUM = 20  # 身體數量(x+y)
-FOOD_NUM = 2
+BODY_NUM = 0  # 身體數量(x+y)
+FOOD_NUM = 0
 INPUT_LAYER = BODY_NUM + 11  # 輸入層總數
+
+FIGURE_RECORD_FRE = 100  # 訓練紀錄圖片 存檔頻率
 
 
 class Agent:
@@ -36,6 +38,11 @@ class Agent:
         self.memory = deque(maxlen=MAX_MEMORY)  # deque資料結構，從左邊丟出(先入先出)，用於agent的記憶
         self.model = Linear_QNet(INPUT_LAYER + FOOD_NUM, 256, 3)  # 創建原始模型(輸入、隱藏、輸出)
         self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)  # 創建訓練者
+
+    def proceed(self, model_path, numbers_game):
+        self.model.load_state_dict(torch.load(model_path + '.pth'))  # 載入模型
+        self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)  # 創建訓練者
+        self.n_games = numbers_game  # 載入局數
 
     # 獲取遊戲狀態
     def get_state(self, game):
@@ -97,8 +104,8 @@ class Agent:
             game.food.y > game.head.y  # 食物在下邊
         ]
 
-        state.extend(pos)
-        state.extend(food_pos)
+        # state.extend(pos)
+        # state.extend(food_pos)
 
         return np.array(state, dtype=float)  # 回傳整數狀態數組
 
@@ -122,7 +129,7 @@ class Agent:
     # 獲得動作
     def get_action(self, state, game):
         # 隨機移動: tradeoff exploration /  exploitation
-        self.epsilon = UPPER_EPSILON - self.n_games / (len(game.snake) - 2)
+        self.epsilon = UPPER_EPSILON - self.n_games  # / (len(game.snake) - 2)
         final_move = [0, 0, 0]  # 最終移動方向
 
         '''
@@ -135,6 +142,11 @@ class Agent:
             final_move[move] = 1
         else:
             state0 = torch.tensor(state, dtype=torch.float)  # 轉換狀態為張量
+
+            # GPU
+            if torch.cuda.is_available():
+                state0 = state0.cuda()
+
             prediction = self.model(state0)  # 透過模型預測下一步(執行model中的forward函數)
             move = torch.argmax(prediction).item()  # 選取預測中最大的數值，作為下一步行動 Ex. [5.0, 2.4, 1.0]
             final_move[move] = 1  # 選取最終行動方案
@@ -150,6 +162,7 @@ def train(file_name):
     record = 0  # 記錄
     agent = Agent()  # agent
     game = SnakeGameAI()  # 遊戲
+    record_ava = True  # 是否可以記錄該局資料
 
     while True:
         # 獲得舊的state
@@ -160,10 +173,14 @@ def train(file_name):
 
         # 執行動作以及獲得新的狀態
         reward, done, score, endall = game.play_step(final_move)
+
         # 透過點x完全關閉訓練，儲存訓練圖
         if endall == 1:
-            slotSave(file_name)
+            slotSave(file_name, plot_score, plot_mean_score, total_score, record, agent.n_games)
             return
+        if agent.n_games % FIGURE_RECORD_FRE == 0 and record_ava == True:
+            slotSave(file_name, plot_score, plot_mean_score, total_score, record, agent.n_games)
+            record_ava = False
 
         state_new = agent.get_state(game)
 
@@ -178,19 +195,103 @@ def train(file_name):
             # 以long memory訓練，並plot result(幫助agent改進自己)
             game.reset()  # 重置遊戲
             agent.n_games += 1  # 增加遊戲局數
+            record_ava = True  # 這局可以記錄訓練資料
             agent.train_long_memory()  # long memory訓練
 
-            # 更新最高分數
-            if score > record:
-                record = score
-                agent.model.save(file_name)  # 呼叫儲存模型的函數
-                slotSave(file_name)  # 儲存當前訓練圖
-
+            # 資料展示
             print('Game', agent.n_games, 'Score', score, 'Record:', record)
 
             plot_score.append(score)  # 添加分數到展示list
             total_score += score  # 計算到目前的總分
             mean_score = total_score / agent.n_games  # 計算平均
             plot_mean_score.append(mean_score)  # 添加平均分數到展示list
-            plot(plot_score, plot_mean_score)  # 展示
+            plot(plot_score, plot_mean_score, file_name)  # 展示
             slot(plot_score, plot_mean_score)  # 儲存資料
+
+            # 更新最高分數
+            if score > record:
+                record = score
+                agent.model.save(file_name)  # 呼叫儲存模型的函數
+                slotSave(file_name, plot_score, plot_mean_score, total_score, record, agent.n_games)  # 儲存當前訓練圖
+
+
+# 訓練函數
+def train_proceed(file_path):
+    plot_score = []  # 分數
+    plot_mean_score = []  # 平均分數
+    total_score = 0  # 總分
+    record = 0  # 記錄
+    agent = Agent()  # agent
+    record_ava = True  # 是否可以記錄該局資料
+
+    # 處理繼續訓練模型
+    (file_path, file_name) = os.path.split(file_path)
+
+    f = open('./data/' + file_name + '.txt', 'r')
+    datas = f.readlines()
+
+    list_score = datas[0].split(',')
+    plot_score = [float(i) for i in list_score]
+
+    list_mean_score = datas[1].split(',')
+    plot_mean_score = [float(i) for i in list_mean_score]
+
+    total_score = float(datas[2])
+    record = float(datas[3])
+    numbers_game = int(datas[4])
+
+    file_path = os.path.join(file_path, file_name)
+    agent.proceed(file_path, numbers_game)
+    # 
+
+    game = SnakeGameAI()  # 遊戲
+
+    while True:
+        # 獲得舊的state
+        state_old = agent.get_state(game)
+
+        # 獲得移動
+        final_move = agent.get_action(state_old, game)
+
+        # 執行動作以及獲得新的狀態
+        reward, done, score, endall = game.play_step(final_move)
+
+        # 透過點x完全關閉訓練，儲存訓練圖
+        if endall == 1:
+            slotSave(file_name, plot_score, plot_mean_score, total_score, record, agent.n_games)
+            return
+        if agent.n_games % FIGURE_RECORD_FRE == 0 and record_ava == True:
+            slotSave(file_name, plot_score, plot_mean_score, total_score, record, agent.n_games)
+            record_ava = False
+
+        state_new = agent.get_state(game)
+
+        # 以short memory訓練
+        agent.train_short_memory(state_old, final_move, reward, state_new, done)
+
+        # 記憶
+        agent.remember(state_old, final_move, reward, state_new, done)
+
+        # 遊戲結束
+        if done:
+            # 以long memory訓練，並plot result(幫助agent改進自己)
+            game.reset()  # 重置遊戲
+            agent.n_games += 1  # 增加遊戲局數
+            record_ava = True  # 這局可以記錄訓練資料
+            agent.train_long_memory()  # long memory訓練
+
+            # 展示
+            print('Game', agent.n_games, 'Score', score, 'Record:', record)
+
+            plot_score.append(score)  # 添加分數到展示list
+            total_score += score  # 計算到目前的總分
+            mean_score = total_score / agent.n_games  # 計算平均
+            plot_mean_score.append(mean_score)  # 添加平均分數到展示list
+            plot(plot_score, plot_mean_score, file_name)  # 展示
+            slot(plot_score, plot_mean_score)  # 儲存資料
+
+            # 更新最高分數
+            if score > record:
+                record = score
+                agent.model.save(file_name)  # 呼叫儲存模型的函數
+                slotSave(file_name, plot_score, plot_mean_score, total_score, record, agent.n_games)  # 儲存當前訓練圖

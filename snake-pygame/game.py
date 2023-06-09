@@ -111,6 +111,8 @@ class SnakeGameAI:
             game_over = True
             reward = -10
             return reward, game_over, self.score, 0
+        else:
+            reward = -0.01  # 催促AI做出行動
 
         # 放置食物或移動
         if self.head == self.food:

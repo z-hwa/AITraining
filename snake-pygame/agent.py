@@ -12,13 +12,18 @@ import copy
 MAX_MEMORY = 100_000  # 最大記憶儲存量5萬
 BATCH_SIZE = 1000
 LR = 0.001  # 學習率
-
-UPPER_EPSILON = 80  # epsilon的上限
 AI_MANIPULATE_RATE = 2.5  # 數值越高 AI操控機率越高
+
+'''
 BODY_NUM = 0 * 2  # 身體數量(x+y)
 FOOD_NUM = 0
 INPUT_LAYER = 11 + BODY_NUM + FOOD_NUM  # 輸入層總數
+'''
+LINE_DETECT = True  # 是否啟動射線偵測器
+FOOD_DETECT = True  # 食物距離偵測器
+INPUT_LAYER = 11 + 8 + 2  # 輸入層
 
+UPPER_EPSILON = INPUT_LAYER * 7  # epsilon的上限
 FIGURE_RECORD_FRE = 100  # 訓練紀錄圖片 存檔頻率
 
 
@@ -60,9 +65,71 @@ class Agent:
         dir_u = game.direction == Direction.UP
         dir_d = game.direction == Direction.DOWN
 
+        # 射線偵測器
+        if LINE_DETECT == True:
+
+            count = 0  # 空格計數器
+            line_l, space_l = 0, 0
+            line_r, space_r = 0, 0
+            line_u, space_u = 0, 0
+            line_d, space_d = 0, 0
+
+            new_x = head.x - 20
+            count = 1
+            # 左邊
+            while new_x >= 0:
+                if Point(new_x, head.y) in game.snake:
+                    line_l = 1
+                    space_l = count
+                    break
+                new_x = new_x - 20
+                count = count + 1
+
+            new_x = head.x + 20
+            count = 1
+            # 右邊
+            while new_x <= 640:
+                if Point(new_x, head.y) in game.snake:
+                    line_r = 1
+                    space_r = count
+                    break
+                new_x = new_x + 20
+                count = count + 1
+
+            new_y = head.y - 20
+            count = 1
+            # 上邊
+            while new_y >= 0:
+                if Point(head.x, new_y) in game.snake:
+                    line_u = 1
+                    space_u = count
+                    break
+                new_y = new_y - 20
+                count = count + 1
+
+            new_y = head.y + 20
+            count = 1
+            # 下邊
+            while new_y <= 480:
+                if Point(head.x, new_y) in game.snake:
+                    line_d = 1
+                    space_d = count
+                    break
+                new_y = new_y + 20
+                count = count + 1
+
+            line_detect = [line_l, line_r, line_u, line_d, space_l, space_r, space_u, space_d]
+        # 食物距離偵測器
+        if FOOD_DETECT == True:
+            x_dis = abs(head.x - game.food.x) / 20
+            y_dis = abs(head.y - game.food.y) / 20
+            food_detect = [x_dis, y_dis]
+
+        '''
+        紀錄身體座標
         food_pos = [game.food.x / 640, game.food.y / 480]
         pos = []
-
+        
         for idx in range(0, int(BODY_NUM / 2)):
             if idx < len(game.snake):
                 pos.append(game.snake[idx].x / 640.0)
@@ -70,6 +137,7 @@ class Agent:
             else:
                 pos.append(-0.00001)
                 pos.append(-0.00001)
+        '''
 
         # 狀態
         state = [
@@ -104,8 +172,15 @@ class Agent:
             game.food.y > game.head.y  # 食物在下邊
         ]
 
+        if LINE_DETECT == True:
+            state.extend(line_detect)   # 增加射線檢測資料
+        if FOOD_DETECT == True:
+            state.extend(food_detect)
+
+        '''紀錄身體座標
         if BODY_NUM > 0:
             state.extend(pos)
+        '''
         # state.extend(food_pos)
 
         return np.array(state, dtype=float)  # 回傳整數狀態數組

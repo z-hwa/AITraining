@@ -4,11 +4,7 @@
     <list default="true" id="843435b7-480a-468e-a634-430754dfa680" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/snake-pygame/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/snake-pygame/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/snake-pygame/data/a3_control.txt" beforeDir="false" afterPath="$PROJECT_DIR$/snake-pygame/data/a3_control.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/snake-pygame/data/f10_punish.txt" beforeDir="false" afterPath="$PROJECT_DIR$/snake-pygame/data/f10_punish.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/snake-pygame/figure/a3_control.png" beforeDir="false" afterPath="$PROJECT_DIR$/snake-pygame/figure/a3_control.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/snake-pygame/figure/f10_punish.png" beforeDir="false" afterPath="$PROJECT_DIR$/snake-pygame/figure/f10_punish.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/snake-pygame/plan.md" beforeDir="false" afterPath="$PROJECT_DIR$/snake-pygame/plan.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
